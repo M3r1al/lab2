@@ -1,0 +1,43 @@
+#ifndef TESTS_HPP
+#define TESTS_HPP
+
+void RunAllTests();
+void TestConstructorValidSize();
+void TestCopyConstructorDynamicArray();
+void TestGetAndSet();
+void TestInitializerConstructor();
+void TestGetOutOfRangeThrowsLinkedList();
+void TestSetOutOfRangeThrows();
+void TestResizeLarger();
+void TestResizeSmaller();
+void TestResizeZeroThrows();
+void TestOperatorAddition();
+void TestOperatorAdditionSizeMismatchThrows();
+void TestOperatorScalarMultiplication();
+void TestDotProduct();
+void TestDotProductSizeMismatchThrows();
+void TestNorm();
+void TestConstructorEmpty();
+void TestConstructorWithItems();
+void TestCopyConstructorLinkedList();
+void TestAppend();
+void TestPrepend();
+void TestInsertAt();
+void TestInsertAtOutOfRangeThrows();
+void TestGetFirstAndLast();
+void TestGetOutOfRangeThrowsLinkedList();
+void TestGetSubList();
+void TestGetSubListInvalidThrows();
+void TestConcat();
+void TestAddVectors();
+void TestScalarMultiply();
+void TestArraySequenceNorm();
+void TestImmutableAppend();
+void TestImmutablePrepend();
+void TestGetSubsequenceEdgeCases();
+void TestConcatWithEmpty();
+void TestInsertAtOutOfRange();
+void TestGetOutOfRange();
+void TestConcatSizeMismatchAdd();
+
+#endif
