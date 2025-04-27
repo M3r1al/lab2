@@ -12,11 +12,11 @@ public:
     virtual T GetLast() const = 0;
     virtual T Get(size_t index) const = 0;
     virtual size_t GetLength() const = 0;
-    virtual string ToString() const = 0;
+    virtual std::string ToString() const = 0;
     virtual Sequence<T>* GetSubsequence(size_t start, size_t end) const = 0;
-    virtual Sequence<T>* Append(T item) = 0;
-    virtual Sequence<T>* Prepend(T item) = 0;
-    virtual Sequence<T>* InsertAt(T item, size_t index) = 0;
+    virtual Sequence<T>* Append(const T& item) = 0;
+    virtual Sequence<T>* Prepend(const T& item) = 0;
+    virtual Sequence<T>* InsertAt(const T& item, size_t index) = 0;
     virtual Sequence<T>* Concat(Sequence<T>* list) const = 0;
     virtual ~Sequence() {}
 };
@@ -27,6 +27,10 @@ class ArraySequence : public Sequence<T>
 {
 private:
     DynamicArray<T> data;
+    virtual ArraySequence<T>* Self()
+    {
+        return this;
+    }
 
 public:
     ArraySequence() : data(0) {}
@@ -39,6 +43,18 @@ public:
     {
         for (size_t i = 0; i < list.GetLength(); i++)
             data.Set(i, list.Get(i));
+    }
+    
+    ArraySequence(const ArraySequence<T>& other) : data(other.GetLength())
+    {
+        for (size_t i = 0; i < data.GetSize(); i++)
+            data.Set(i, other.Get(i));
+    }
+
+    ArraySequence(const Sequence<T>* other) : data(other->GetLength())
+    {
+        for (size_t i = 0; i < other->GetLength(); i++)
+            data.Set(i, other->Get(i));
     }
 
     T GetFirst() const override
@@ -64,7 +80,7 @@ public:
     Sequence<T>* GetSubsequence(size_t start, size_t end) const override
     {
         if (start > end || end >= GetLength())
-            throw out_of_range("Invalid range");
+            throw std::out_of_range("Invalid range");
         T* temp = new T[end - start + 1];
         for (size_t i = 0; i <= end - start; i++)
             temp[i] = data.Get(start + i);
@@ -73,32 +89,35 @@ public:
         return sub;
     }
 
-    Sequence<T>* Append(T item) override
+    Sequence<T>* Append(const T& item) override
     {
-        data.Resize(data.GetSize() + 1);
-        data.Set(data.GetSize() - 1, item);
-        return this;
+        auto self = Self();
+        self->data.Resize(self->data.GetSize() + 1);
+        self->data.Set(self->data.GetSize() - 1, item);
+        return self;
     }
 
-    Sequence<T>* Prepend(T item) override
+    Sequence<T>* Prepend(const T& item) override
     {
-        size_t size = data.GetSize();
-        data.Resize(size + 1);
+        auto self = Self();
+        size_t size = self->data.GetSize();
+        self->data.Resize(size + 1);
         for (size_t i = size; i > 0; i--)
-            data.Set(i, data.Get(i - 1));
-        data.Set(0, item);
-        return this;
+            self->data.Set(i, self->data.Get(i - 1));
+        self->data.Set(0, item);
+        return self;
     }
 
-    Sequence<T>* InsertAt(T item, size_t index) override
+    Sequence<T>* InsertAt(const T& item, size_t index) override
     {
+        auto self = Self();
         if (index > data.GetSize())
-            throw out_of_range("Index out of range");
-        data.Resize(data.GetSize() + 1);
-        for (size_t i = data.GetSize() - 1; i > index; i--)
-            data.Set(i, data.Get(i - 1));
-        data.Set(index, item);
-        return this;
+            throw std::out_of_range("Index out of range");
+        self->data.Resize(self->data.GetSize() + 1);
+        for (size_t i = self->data.GetSize() - 1; i > index; i--)
+            self->data.Set(i, self->data.Get(i - 1));
+        self->data.Set(index, item);
+        return self;
     }
 
     Sequence<T>* Concat(Sequence<T>* list) const override
@@ -117,7 +136,7 @@ public:
     Sequence<T>* Add(const Sequence<T>* other) const
     {
         if (GetLength() != other->GetLength())
-            throw invalid_argument("Size mismatch in addition");
+            throw std::invalid_argument("Size mismatch in addition");
         DynamicArray<T> otherData(GetLength());
         for (size_t i = 0; i < GetLength(); i++)
             otherData.Set(i, other->Get(i));
@@ -134,7 +153,7 @@ public:
     T Dot(const Sequence<T>* other) const
     {
         if (GetLength() != other->GetLength())
-            throw invalid_argument("Size mismatch in dot product");
+            throw std::invalid_argument("Size mismatch in dot product");
         DynamicArray<T> otherData(GetLength());
         for (size_t i = 0; i < GetLength(); i++)
             otherData.Set(i, other->Get(i));
@@ -158,7 +177,7 @@ public:
         return data[index];
     }
 
-    string ToString() const override
+    std::string ToString() const override
     {
         return data.ToString();
     }
@@ -170,6 +189,10 @@ class ListSequence : public Sequence<T>
 {
 private:
     LinkedList<T> list;
+    virtual ListSequence<T>* Self()
+    {
+        return this;
+    }
 
 public:
     ListSequence() {}
@@ -177,6 +200,14 @@ public:
     ListSequence(const T* items, size_t count) : list(items, count) {}
 
     ListSequence(const LinkedList<T>& linked) : list(linked) {}
+
+    ListSequence(const ListSequence<T>& linked) : list(*GetSubList(0, linked.GetLength())) {}
+
+    ListSequence(const Sequence<T>* other) : list()
+    {
+        for (size_t i = 0; i < other->GetLength(); i++)
+            list.Append(other->Get(i));
+    }
 
     T GetFirst() const override
     {
@@ -203,22 +234,25 @@ public:
         return new ListSequence<T>(*list.GetSubList(start, end));
     }
 
-    Sequence<T>* Append(T item) override
+    Sequence<T>* Append(const T& item) override
     {
-        list.Append(item);
-        return this;
+        auto self = Self();
+        self->list.Append(item);
+        return self;
     }
 
-    Sequence<T>* Prepend(T item) override
+    Sequence<T>* Prepend(const T& item) override
     {
-        list.Prepend(item);
-        return this;
+        auto self = Self();
+        self->list.Prepend(item);
+        return self;
     }
 
-    Sequence<T>* InsertAt(T item, size_t index) override
+    Sequence<T>* InsertAt(const T& item, size_t index) override
     {
-        list.InsertAt(item, index);
-        return this;
+        auto self = Self();
+        self->list.InsertAt(item, index);
+        return self;
     }
 
     Sequence<T>* Concat(Sequence<T>* other) const override
@@ -239,7 +273,7 @@ public:
         return list[index];
     }
 
-    string ToString() const override
+    std::string ToString() const override
     {
         return list.ToString();
     }
@@ -249,53 +283,24 @@ public:
 template <typename T>
 class MutableArraySequence : public ArraySequence<T>
 {
-public:
-
-    Sequence<T>* Append(T item) override
+private:
+    ArraySequence<T>* Self() override
     {
-        ArraySequence<T>::Append(item);
-        return this;
-    }
-
-    Sequence<T>* Prepend(T item) override
-    {
-        ArraySequence<T>::Prepend(item);
-        return this;
-    }
-
-    Sequence<T>* InsertAt(T item, size_t index) override
-    {
-        ArraySequence<T>::InsertAt(item, index);
-        return this;
+        return new ArraySequence<T>(*this); // Создаёт копию текущего объекта
     }
 };
 
 template <typename T>
 class ImmutableArraySequence : public ArraySequence<T>
 {
+private:
+    ArraySequence<T>* Self() override
+    {
+        return new ImmutableArraySequence<T>(*this);
+    }
 public:
     // ImmutableArraySequence(const LinkedList<T>& list) : ArraySequence<T>(list) {}
     ImmutableArraySequence(const T* items, size_t count) : ArraySequence<T>(items, count) {}
-    Sequence<T>* Append(T item) override
-    {
-        ArraySequence<T>* clone = new ArraySequence<T>(*this);
-        clone->Append(item);
-        return clone;
-    }
-
-    Sequence<T>* Prepend(T item) override
-    {
-        ArraySequence<T>* clone = new ArraySequence<T>(*this);
-        clone->Prepend(item);
-        return clone;
-    }
-
-    Sequence<T>* InsertAt(T item, size_t index) override
-    {
-        ArraySequence<T>* clone = new ArraySequence<T>(*this);
-        clone->InsertAt(item, index);
-        return clone;
-    }
 };
 
 // Mutable and Immutable ListSequence
@@ -304,19 +309,19 @@ class MutableListSequence : public ListSequence<T>
 {
 public:
 
-    Sequence<T>* Append(T item) override
+    Sequence<T>* Append(const T& item) override
     {
         ListSequence<T>::Append(item);
         return this;
     }
 
-    Sequence<T>* Prepend(T item) override
+    Sequence<T>* Prepend(const T& item) override
     {
         ListSequence<T>::Prepend(item);
         return this;
     }
 
-    Sequence<T>* InsertAt(T item, size_t index) override
+    Sequence<T>* InsertAt(const T& item, size_t index) override
     {
         ListSequence<T>::InsertAt(item, index);
         return this;
@@ -326,27 +331,10 @@ public:
 template <typename T>
 class ImmutableListSequence : public ListSequence<T>
 {
-public:
-
-    Sequence<T>* Append(T item) override
+private:
+    ListSequence<T>* Self() override
     {
-        ListSequence<T>* clone = new ListSequence<T>(*this);
-        clone->Append(item);
-        return clone;
-    }
-
-    Sequence<T>* Prepend(T item) override
-    {
-        ListSequence<T>* clone = new ListSequence<T>(*this);
-        clone->Prepend(item);
-        return clone;
-    }
-
-    Sequence<T>* InsertAt(T item, size_t index) override
-    {
-        ListSequence<T>* clone = new ListSequence<T>(*this);
-        clone->InsertAt(item, index);
-        return clone;
+        return new ListSequence<T>(static_cast<const Sequence<T>*>(this));
     }
 };
 

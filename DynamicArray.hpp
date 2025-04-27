@@ -6,8 +6,6 @@
 #include <new>
 #include <string>
 
-using namespace std;
-
 template <typename T>
 class DynamicArray
 {
@@ -22,9 +20,9 @@ public:
         {
             data = new T[size];
         }
-        catch (const bad_alloc& e)
+        catch (const std::bad_alloc& e)
         {
-            throw runtime_error("Memory allocation failed in constructor");
+            throw std::runtime_error("Memory allocation failed in constructor");
         }
     }
 
@@ -36,9 +34,9 @@ public:
             for (size_t i = 0; i < count; i++)
                 data[i] = items[i];
         }
-        catch (const bad_alloc& e)
+        catch (const std::bad_alloc& e)
         {
-            throw runtime_error("Memory allocation failed in initializer");
+            throw std::runtime_error("Memory allocation failed in initializer");
         }
     }
 
@@ -50,9 +48,9 @@ public:
             for (size_t i = 0; i < size; i++)
                 data[i] = other.data[i];
         }
-        catch (const bad_alloc& e)
+        catch (const std::bad_alloc& e)
         {
-            throw runtime_error("Memory allocation failed in copy constructor");
+            throw std::runtime_error("Memory allocation failed in copy constructor");
         }
     }
 
@@ -64,14 +62,14 @@ public:
     T Get(size_t index) const
     {
         if (index >= size)
-            throw out_of_range("Index out of range");
+            throw std::out_of_range("Index out of range");
         return data[index];
     }
 
-    void Set(size_t index, T value)
+    void Set(size_t index, const T& value)
     {
         if (index >= size)
-            throw out_of_range("Index out of range");
+            throw std::out_of_range("Index out of range");
         data[index] = value;
     }
 
@@ -83,7 +81,7 @@ public:
     void Resize(size_t newSize)
     {
         if (newSize == 0)
-            throw invalid_argument("Resize size cannot be zero");
+            throw std::invalid_argument("Resize size cannot be zero");
         try
         {
             T* newData = new T[newSize];
@@ -93,9 +91,9 @@ public:
             data = newData;
             size = newSize;
         }
-        catch (const bad_alloc& e)
+        catch (const std::bad_alloc& e)
         {
-            throw runtime_error("Memory allocation failed in Resize");
+            throw std::runtime_error("Memory allocation failed in Resize");
         }
     }
 
@@ -103,7 +101,7 @@ public:
     DynamicArray operator+(const DynamicArray& other) const
     {
         if (size != other.size)
-            throw invalid_argument("Size mismatch in addition");
+            throw std::invalid_argument("Size mismatch in addition");
         DynamicArray result(size);
         for (size_t i = 0; i < size; i++)
             result.data[i] = data[i] + other.data[i];
@@ -111,7 +109,7 @@ public:
     }
 
     // Scalar Multiplication
-    DynamicArray operator*(T scalar) const
+    DynamicArray operator*(const T& scalar) const
     {
         DynamicArray result(size);
         for (size_t i = 0; i < size; i++)
@@ -139,7 +137,7 @@ public:
 
     DynamicArray<T> ScalarMultiply(int scalar) const
     {
-        return this * scalar;
+        return (*this) * scalar;
         // DynamicArray<T> new_array(size);
         // for (int i = 0; i < size; i++)
         //     new_array.Set(i, this->Get(i) * scalar);
@@ -150,7 +148,7 @@ public:
     T Dot(const DynamicArray& other) const
     {
         if (size != other.size)
-            throw invalid_argument("Size mismatch in dot product");
+            throw std::invalid_argument("Size mismatch in dot product");
         T result = T();
         for (size_t i = 0; i < size; i++)
             result += data[i] * other.data[i];
@@ -161,22 +159,22 @@ public:
     double Norm() const
     {
         if (size == 0)
-            throw invalid_argument("Cannot compute norm of an empty array");
+            throw std::invalid_argument("Cannot compute norm of an empty array");
         double sum = 0;
         for (size_t i = 0; i < size; i++)
-            sum += static_cast<double>(data[i]) * data[i];
+            sum += static_cast<double>(data[i]) * data[i]; // приводим к double, чтобы не было целочисленного умножения. И повышает точность в случае float
         return std::sqrt(sum);
     }
 
-    string ToString() const
+    std::string ToString() const
     {
         if (size == 0)
             return "[]";
         
-        string s = "[";
+        std::string s = "[";
         for (int i = 0; i < size - 1; i++)
-            s += to_string(Get(i)) + ", ";
-        s += to_string(Get(size - 1)) + "]";
+            s += std::to_string(Get(i)) + ", ";
+        s += std::to_string(Get(size - 1)) + "]";
         return s;
     }
 };

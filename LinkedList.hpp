@@ -1,8 +1,6 @@
 #ifndef LINKEDLIST_HPP
 #define LINKEDLIST_HPP
 
-using namespace std;
-
 template <typename T>
 class LinkedList
 {
@@ -18,6 +16,23 @@ private:
     Node* head;
     Node* tail;
     size_t length;
+
+    T* GetNode(size_t index)
+    {
+        if (index >= length)
+            throw std::out_of_range("Index out of range");
+        if (index < length / 2)
+        {
+            Node* temp = head;
+            for (size_t i = 0; i < index; i++)
+                temp = temp->next;
+            return temp->data;
+        }
+        Node* temp = tail;
+        for (size_t i = 0; i < length - 1 - index; i++)
+            temp = temp->previous;
+        return *(temp->data);
+    }
 
 public:
     LinkedList() : head(nullptr), tail(nullptr), length(0) {}
@@ -52,31 +67,38 @@ public:
     T GetFirst() const
     {
         if (!head)
-            throw out_of_range("List is empty");
+            throw std::out_of_range("List is empty");
         return head->data;
     }
 
     T GetLast() const
     {
         if (!tail)
-            throw out_of_range("List is empty");
+            throw std::out_of_range("List is empty");
         return tail->data;
     }
 
     T Get(size_t index) const
     {
         if (index >= length)
-            throw out_of_range("Index out of range");
-        Node* temp = head;
-        for (size_t i = 0; i < index; i++)
-            temp = temp->next;
+            throw std::out_of_range("Index out of range");
+        if (index < length / 2)
+        {
+            Node* temp = head;
+            for (size_t i = 0; i < index; i++)
+                temp = temp->next;
+            return temp->data;
+        }
+        Node* temp = tail;
+        for (size_t i = 0; i < length - 1 - index; i++)
+            temp = temp->previous;
         return temp->data;
     }
 
     LinkedList<T>* GetSubList(size_t start, size_t end) const
     {
         if (start > end || end >= length)
-            throw out_of_range("Invalid sublist indices");
+            throw std::out_of_range("Invalid sublist indices");
 
         LinkedList<T>* sublist = new LinkedList<T>();
         Node* current = head;
@@ -100,8 +122,8 @@ public:
         return length;
     }
 
-    // теперь O(n)
-    void Append(T item)
+    // теперь O(1)
+    void Append(const T& item)
     {
         Node* newNode = new Node(item);
         if (!head)
@@ -118,7 +140,7 @@ public:
         length++;
     }
 
-    void Prepend(T item)
+    void Prepend(const T& item)
     {
         Node* newNode = new Node(item);
         newNode->next = head;
@@ -130,13 +152,18 @@ public:
         length++;
     }
 
-    void InsertAt(T item, size_t index)
+    void InsertAt(const T& item, size_t index)
     {
         if (index > length)
-            throw out_of_range("Index out of range");
+            throw std::out_of_range("Index out of range");
         if (index == 0)
         {
             Prepend(item);
+            return;
+        }
+        if (index == length)
+        {
+            Append(item);
             return;
         }
 
@@ -156,7 +183,7 @@ public:
     LinkedList<T>* Concat(LinkedList<T>* list) const
     {
         if (!list)
-            throw invalid_argument("List cannot be null");
+            throw std::invalid_argument("List cannot be null");
         
         LinkedList<T>* result = new LinkedList<T>(*this);
         Node* temp = list->head;
@@ -175,7 +202,7 @@ public:
         if (index >= length)
             throw std::out_of_range("Index out of bounds");
         
-        return Get(index);
+        return GetNode(index);
     }
 
     // Оператор [] для чтения (const версия)
@@ -187,15 +214,15 @@ public:
         return Get(index);
     }
 
-    string ToString() const
+    std::string ToString() const
     {
         if (length == 0)
             return "[]";
         
-        string s = "[";
+        std::string s = "[";
         for (int i = 0; i < length - 1; i++)
-            s += to_string(Get(i)) + ", ";
-        s += to_string(Get(length - 1)) + "]";
+            s += std::to_string(Get(i)) + ", ";
+        s += std::to_string(Get(length - 1)) + "]";
 
         return s;
     }
