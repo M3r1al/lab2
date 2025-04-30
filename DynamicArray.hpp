@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <new>
 #include <string>
+#include <complex>
 
 template <typename T>
 class DynamicArray
@@ -12,6 +13,19 @@ class DynamicArray
 private:
     T* data;
     size_t size;
+
+    // Вспомогательные функции для вычисления квадрата элемента
+    template <typename U>
+    static double squaredNormElement(const U& x)
+    {
+        return static_cast<double>(x) * static_cast<double>(x);
+    }
+
+    template <typename T2>
+    static double squaredNormElement(const std::complex<T2>& x)
+    {
+        return (x.real() * x.real() + x.imag() * x.imag());
+    }
 
 public:
     DynamicArray(size_t size) : size(size)
@@ -135,7 +149,7 @@ public:
         return data[index];
     }
 
-    DynamicArray<T> ScalarMultiply(int scalar) const
+    DynamicArray<T> ScalarMultiply(T scalar) const
     {
         return (*this) * scalar;
         // DynamicArray<T> new_array(size);
@@ -162,7 +176,7 @@ public:
             throw std::invalid_argument("Cannot compute norm of an empty array");
         double sum = 0;
         for (size_t i = 0; i < size; i++)
-            sum += static_cast<double>(data[i]) * data[i]; // приводим к double, чтобы не было целочисленного умножения. И повышает точность в случае float
+            sum += squaredNormElement(data[i]); // Используем вспомогательные функции
         return std::sqrt(sum);
     }
 

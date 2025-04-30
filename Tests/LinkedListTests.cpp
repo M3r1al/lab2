@@ -3,11 +3,9 @@
 #include <iostream>
 #include <stdexcept>
 #include "LinkedListTests.hpp"
+#include "TestsUtils.hpp"
 
 using namespace std;
-
-#define GREEN(s) std::cout << "\033[32m" << s << "\033[0m" << std::endl;
-#define RED(s, p) std::cout << "\033[31m" << s << p << "\033[0m" << std::endl;
 
 void RunLinkedListTests()
 {
@@ -30,9 +28,9 @@ void TestConstructorEmpty()
 {
     LinkedList<int> list;
     if (list.GetLength() != 0)
-        RED("TestConstructorEmpty failed: Expected length 0, got ", list.GetLength())
+        RED("TestConstructorEmpty failed: Expected length 0, got ", list.GetLength());
     else
-        GREEN("TestConstructorEmpty passed")
+        GREEN("TestConstructorEmpty passed");
 }
 
 void TestConstructorWithItems()
@@ -41,18 +39,18 @@ void TestConstructorWithItems()
     LinkedList<int> list(values, 4);
     if (list.GetLength() != 4)
     {
-        RED("TestConstructorWithItems failed: Expected length 4, got ", list.GetLength())
+        RED("TestConstructorWithItems failed: Expected length 4, got ", list.GetLength());
         return;
     }
     for (size_t i = 0; i < 4; i++)
     {
         if (list.Get(i) != values[i])
         {
-            RED("TestConstructorWithItems failed: Error at index ", i)
+            RED("TestConstructorWithItems failed: Error at index ", i);
             return;
         }
     }
-    GREEN("TestConstructorWithItems passed")
+    GREEN("TestConstructorWithItems passed");
 }
 
 void TestCopyConstructorLinkedList()
@@ -63,20 +61,20 @@ void TestCopyConstructorLinkedList()
     LinkedList<int> list2 = list1;
     if (list2.GetLength() != 2)
     {
-        RED("TestCopyConstructorLinkedList failed: Expected length 2, got ", list2.GetLength())
+        RED("TestCopyConstructorLinkedList failed: Expected length 2, got ", list2.GetLength());
         return;
     }
     if (list2.Get(0) != 10)
     {
-        RED("TestCopyConstructorLinkedList failed: Index 0 value mismatch", "")
+        RED("TestCopyConstructorLinkedList failed: Index 0 value mismatch");
         return;
     }
     if (list2.Get(1) != 20)
     {
-        RED("TestCopyConstructorLinkedList failed: Index 0 value mismatch", "")
+        RED("TestCopyConstructorLinkedList failed: Index 0 value mismatch");
         return;
     }
-    GREEN("TestCopyConstructorLinkedList passed")
+    GREEN("TestCopyConstructorLinkedList passed");
 }
 
 void TestAppend()
@@ -86,20 +84,20 @@ void TestAppend()
     list.Append(10);
     if (list.GetLength() != 2)
     {
-        RED("TestAppend failed: Expected length 2, got ", list.GetLength())
+        RED("TestAppend failed: Expected length 2, got ", list.GetLength());
         return;
     }
     if (list.Get(0) != 5)
     {
-        RED("TestAppend failed: Index 0 value mismatch", "")
+        RED("TestAppend failed: Index 0 value mismatch");
         return;
     }
     if (list.Get(1) != 10)
     {
-        RED("TestAppend failed: Index 0 value mismatch", "")
+        RED("TestAppend failed: Index 0 value mismatch");
         return;
     }
-    GREEN("TestAppend passed")
+    GREEN("TestAppend passed");
 }
 
 void TestPrepend()
@@ -109,20 +107,20 @@ void TestPrepend()
     list.Prepend(10);
     if (list.GetLength() != 2)
     {
-        RED("TestPrepend failed: Expected length 2, got ", list.GetLength())
+        RED("TestPrepend failed: Expected length 2, got ", list.GetLength());
         return;
     }
     if (list.Get(0) != 10)
     {
-        RED("TestPrepend failed: Index 0 value mismatch. Expected 10, got ", list.Get(0))
+        RED("TestPrepend failed: Index 0 value mismatch. Expected 10, got ", list.Get(0));
         return;
     }
     if (list.Get(1) != 20)
     {
-        RED("TestPrepend failed: Index 1 value mismatch. Expected 20, got ", list.Get(1))
+        RED("TestPrepend failed: Index 1 value mismatch. Expected 20, got ", list.Get(1));
         return;
     }
-    GREEN("TestPrepend passed")
+    GREEN("TestPrepend passed");
 }
 
 void TestInsertAt()
@@ -133,25 +131,25 @@ void TestInsertAt()
     list.InsertAt(20, 1);
     if (list.GetLength() != 3)
     {
-        RED("TestInsertAt failed: Expected length 3, got ", list.GetLength())
+        RED("TestInsertAt failed: Expected length 3, got ", list.GetLength());
         return;
     }
     if (list.Get(0) != 10)
     {
-        RED("TestInsertAt failed: Index 0 value mismatch. Expected 10, got ", list.Get(0))
+        RED("TestInsertAt failed: Index 0 value mismatch. Expected 10, got ", list.Get(0));
         return;
     }
     if (list.Get(1) != 20)
     {
-        RED("TestInsertAt failed: Index 1 value mismatch. Expected 20, got ", list.Get(1))
+        RED("TestInsertAt failed: Index 1 value mismatch. Expected 20, got ", list.Get(1));
         return;
     }
     if (list.Get(2) != 30)
     {
-        RED("TestInsertAt failed: Index 2 value mismatch. Expected 30, got ", list.Get(2))
+        RED("TestInsertAt failed: Index 2 value mismatch. Expected 30, got ", list.Get(2));
         return;
     }
-    GREEN("TestInsertAt passed")
+    GREEN("TestInsertAt passed");
 }
 
 void TestInsertAtOutOfRangeThrows()
@@ -160,15 +158,15 @@ void TestInsertAtOutOfRangeThrows()
     try
     {
         list.InsertAt(10, 5);
-        RED("TestInsertAtOutOfRangeThrows failed: Exception not thrown", "")
+        RED("TestInsertAtOutOfRangeThrows failed: Exception not thrown");
     }
     catch (const out_of_range&)
     {
-        GREEN("TestInsertAtOutOfRangeThrows passed")
+        GREEN("TestInsertAtOutOfRangeThrows passed");
     }
     catch (...)
     {
-        RED("TestInsertAtOutOfRangeThrows failed: Wrong type of exception", "")
+        RED("TestInsertAtOutOfRangeThrows failed: Wrong type of exception");
     }
 }
 
@@ -180,15 +178,15 @@ void TestGetFirstAndLast()
     list.Append(30);
     if (list.GetFirst() != 10)
     {
-        RED("TestGetFirstAndLast failed: First value mismatch. Expected 10, got ", list.GetFirst())
+        RED("TestGetFirstAndLast failed: First value mismatch. Expected 10, got ", list.GetFirst());
         return;
     }
     if (list.GetLast() != 30)
     {
-        RED("TestGetFirstAndLast failed: Last value mismatch. Expected 20, got ", list.GetLast())
+        RED("TestGetFirstAndLast failed: Last value mismatch. Expected 20, got ", list.GetLast());
         return;
     }
-    GREEN("TestGetFirstAndLast passed")
+    GREEN("TestGetFirstAndLast passed");
 }
 
 void TestGetOutOfRangeThrowsLinkedList()
@@ -198,15 +196,15 @@ void TestGetOutOfRangeThrowsLinkedList()
     try
     {
         list.Get(2);
-        RED("TestGetOutOfRangeThrowsLinkedList failed: Exception not thrown", "")
+        RED("TestGetOutOfRangeThrowsLinkedList failed: Exception not thrown");
     }
     catch (const out_of_range&)
     {
-        GREEN("TestGetOutOfRangeThrowsLinkedList passed")
+        GREEN("TestGetOutOfRangeThrowsLinkedList passed");
     }
     catch (...)
     {
-        RED("TestGetOutOfRangeThrowsLinkedList failed: Wrong type of exception", "")
+        RED("TestGetOutOfRangeThrowsLinkedList failed: Wrong type of exception");
     }
 }
 
@@ -217,25 +215,25 @@ void TestGetSubList()
     LinkedList<int>* sublist = list.GetSubList(1, 3);
     if (sublist->GetLength() != 3)
     {
-        RED("TestGetSubList failed: Expected length 3, got ", sublist->GetLength())
+        RED("TestGetSubList failed: Expected length 3, got ", sublist->GetLength());
         return;
     }
     if (sublist->Get(0) != 20)
     {
-        RED("TestGetSubList failed: Index 0 value mismatch. Expected 20, got ", sublist->Get(0))
+        RED("TestGetSubList failed: Index 0 value mismatch. Expected 20, got ", sublist->Get(0));
         return;
     }
     if (sublist->Get(1) != 30)
     {
-        RED("TestGetSubList failed: Index 1 value mismatch. Expected 30, got ", sublist->Get(1))
+        RED("TestGetSubList failed: Index 1 value mismatch. Expected 30, got ", sublist->Get(1));
         return;
     }
     if (sublist->Get(2) != 40)
     {
-        RED("TestGetSubList failed: Index 2 value mismatch. Expected 40, got ", sublist->Get(2))
+        RED("TestGetSubList failed: Index 2 value mismatch. Expected 40, got ", sublist->Get(2));
         return;
     }
-    GREEN("TestGetSubList passed")
+    GREEN("TestGetSubList passed");
 }
 
 void TestGetSubListInvalidThrows()
@@ -245,17 +243,17 @@ void TestGetSubListInvalidThrows()
     try
     {
         list.GetSubList(1, 3);
-        RED("TestGetSubListInvalidThrows failed: Exception not thrown", "")
+        RED("TestGetSubListInvalidThrows failed: Exception not thrown");
     }
     catch (const out_of_range&)
     {
-        GREEN("TestGetSubListInvalidThrows passed")
+        GREEN("TestGetSubListInvalidThrows passed");
     }
     catch (...)
     {
-        RED("TestGetSubListInvalidThrows failed: Wrong type of exception", "")
+        RED("TestGetSubListInvalidThrows failed: Wrong type of exception");
     }
-    GREEN("TestGetSubListInvalidThrows passed")
+    GREEN("TestGetSubListInvalidThrows passed");
 }
 
 void TestConcat()
@@ -269,28 +267,28 @@ void TestConcat()
     LinkedList<int>* result = list1.Concat(&list2);
     if (result->GetLength() != 4)
     {
-        RED("TestConcat failed: Expected length 4, got ", result->GetLength())
+        RED("TestConcat failed: Expected length 4, got ", result->GetLength());
         return;
     }
     if (result->Get(0) != 10)
     {
-        RED("TestConcat failed: Index 0 value mismatch. Expected 10, got ", result->Get(0))
+        RED("TestConcat failed: Index 0 value mismatch. Expected 10, got ", result->Get(0));
         return;
     }
     if (result->Get(1) != 20)
     {
-        RED("TestConcat failed: Index 1 value mismatch. Expected 20, got ", result->Get(1))
+        RED("TestConcat failed: Index 1 value mismatch. Expected 20, got ", result->Get(1));
         return;
     }
     if (result->Get(2) != 30)
     {
-        RED("TestConcat failed: Index 2 value mismatch. Expected 30, got ", result->Get(2))
+        RED("TestConcat failed: Index 2 value mismatch. Expected 30, got ", result->Get(2));
         return;
     }
     if (result->Get(3) != 40)
     {
-        RED("TestConcat failed: Index 3 value mismatch. Expected 40, got ", result->Get(3))
+        RED("TestConcat failed: Index 3 value mismatch. Expected 40, got ", result->Get(3));
         return;
     }
-    GREEN("TestConcat passed")
+    GREEN("TestConcat passed");
 }

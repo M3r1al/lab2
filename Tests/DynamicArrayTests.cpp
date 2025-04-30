@@ -2,11 +2,9 @@
 #include <iostream>
 #include <stdexcept>
 #include "DynamicArrayTests.hpp"
+#include "TestsUtils.hpp"
 
 using namespace std;
-
-#define GREEN(s) std::cout << "\033[32m" << s << "\033[0m" << std::endl;
-#define RED(s, p) std::cout << "\033[31m" << s << p << "\033[0m" << std::endl;
 
 void RunDynamicArrayTests()
 {
@@ -31,9 +29,9 @@ void TestConstructorValidSize()
 {
     DynamicArray<int> arr(10);
     if (arr.GetSize() != 10)
-        RED("TestConstructorValidSize failed: Expected size 10, got ", arr.GetSize())
+        RED("TestConstructorValidSize failed: Expected size 10, got ", arr.GetSize());
     else
-        GREEN("TestConstructorValidSize passed")
+        GREEN("TestConstructorValidSize passed");
 }
 
 void TestCopyConstructorDynamicArray()
@@ -50,7 +48,7 @@ void TestCopyConstructorDynamicArray()
             return;
         }
     }
-    GREEN("TestCopyConstructorDynamicArray passed")
+    GREEN("TestCopyConstructorDynamicArray passed");
 }
 
 void TestInitializerConstructor()
@@ -61,11 +59,11 @@ void TestInitializerConstructor()
     {
         if (arr.Get(i) != values[i])
         {
-            RED("TestInitializerConstructor failed: Error at index ", i)
+            RED("TestInitializerConstructor failed: Error at index ", i);
             return;
         }
     }
-    GREEN("TestInitializerConstructor passed")
+    GREEN("TestInitializerConstructor passed");
 }
 
 void TestGetAndSet()
@@ -76,20 +74,20 @@ void TestGetAndSet()
     arr.Set(2, 30);
     if (arr.Get(0) != 10)
     {
-        RED("TestGetAndSet failed: Index 0 value mismatch", "")
+        RED("TestGetAndSet failed: Index 0 value mismatch");
         return;
     }
     if (arr.Get(1) != 20)
     {
-        RED("TestGetAndSet failed: Index 1 value mismatch", "")
+        RED("TestGetAndSet failed: Index 1 value mismatch");
         return;
     }
     if (arr.Get(2) != 30)
     {
-        RED("TestGetAndSet failed: Index 2 value mismatch", "")
+        RED("TestGetAndSet failed: Index 2 value mismatch");
         return;
     }
-    GREEN("TestGetAndSet passed")
+    GREEN("TestGetAndSet passed");
 }
 
 void TestGetOutOfRangeThrowsDynamicArray()
@@ -98,15 +96,15 @@ void TestGetOutOfRangeThrowsDynamicArray()
     try
     {
         arr.Get(5);
-        RED("TestGetOutOfRangeThrowsDynamicArray failed: Exception not thrown", "")
+        RED("TestGetOutOfRangeThrowsDynamicArray failed: Exception not thrown");
     }
     catch (const out_of_range&)
     {
-        GREEN("TestGetOutOfRangeThrowsDynamicArray passed")
+        GREEN("TestGetOutOfRangeThrowsDynamicArray passed");
     }
     catch (...)
     {
-        RED("TestGetOutOfRangeThrowsDynamicArray failed: Wrong type of expection", "")
+        RED("TestGetOutOfRangeThrowsDynamicArray failed: Wrong type of expection");
     }
 }
 
@@ -116,15 +114,15 @@ void TestSetOutOfRangeThrows()
     try
     {
         arr.Set(5, 100);
-        RED("TestSetOutOfRangeThrows failed: Excetion not thrown", "")
+        RED("TestSetOutOfRangeThrows failed: Excetion not thrown");
     }
     catch (const out_of_range&)
     {
-        GREEN("TestSetOutOfRangeThrows passed")
+        GREEN("TestSetOutOfRangeThrows passed");
     }
     catch (...)
     {
-        RED("TestSetOutOfRangeThrows failed: Wrong type of exception", "")
+        RED("TestSetOutOfRangeThrows failed: Wrong type of exception");
     }
 }
 
@@ -137,22 +135,22 @@ void TestResizeLarger()
     arr.Resize(5);
     if (arr.GetSize() != 5)
     {
-        RED("TestResizeLarger failed: Expected size 5, got ", arr.GetSize())
+        RED("TestResizeLarger failed: Expected size 5, got ", arr.GetSize());
         return;
     }
     if (arr.Get(0) != 10)
     {
-        RED("TestResizeLarger failed: Index 0 value mismatch", "")
+        RED("TestResizeLarger failed: Index 0 value mismatch");
         return;
     }
     if (arr.Get(1) != 20)
     {
-        RED("TestResizeLarger failed: Index 1 value mismatch", "")
+        RED("TestResizeLarger failed: Index 1 value mismatch");
         return;
     }
     if (arr.Get(2) != 30)
     {
-        RED("TestResizeLarger failed: Index 2 value mismatch", "")
+        RED("TestResizeLarger failed: Index 2 value mismatch");
         return;
     }
 }
@@ -165,18 +163,18 @@ void TestResizeSmaller()
     arr.Resize(3);
     if (arr.GetSize() != 3)
     {
-        RED("TestResizeSmaller failed: Expected size 3, got ", arr.GetSize())
+        RED("TestResizeSmaller failed: Expected size 3, got ", arr.GetSize());
         return;
     }
     for (size_t i = 0; i < 3; ++i)
     {
         if (arr.Get(i) != i * 10)
         {
-            RED("TestResizeSmaller failed: Error at index ", i)
+            RED("TestResizeSmaller failed: Error at index ", i);
             return;
         }
     }
-    GREEN("TestResizeSmaller passed")
+    GREEN("TestResizeSmaller passed");
 }
 
 void TestResizeZeroThrows()
@@ -185,15 +183,15 @@ void TestResizeZeroThrows()
     try
     {
         arr.Resize(0);
-        RED("TestResizeZeroThrows failed: Exception not thrown", "")
+        RED("TestResizeZeroThrows failed: Exception not thrown");
     }
     catch (const invalid_argument&)
     {
-        GREEN("TestResizeZeroThrows passed")
+        GREEN("TestResizeZeroThrows passed");
     }
     catch (...)
     {
-        RED("TestResizeZeroThrows failed: Wrong type of exception", "")
+        RED("TestResizeZeroThrows failed: Wrong type of exception");
     }
 }
 
@@ -209,20 +207,20 @@ void TestOperatorAddition()
     DynamicArray<int> result = arr1 + arr2;
     if (result.Get(0) != 3)
     {
-        RED("TestOperatorAddition failed: Index 0 value mismatch", "")
+        RED("TestOperatorAddition failed: Index 0 value mismatch");
         return;
     }
     if (result.Get(1) != 6)
     {
-        RED("TestOperatorAddition failed: Index 1 value mismatch", "")
+        RED("TestOperatorAddition failed: Index 1 value mismatch");
         return;
     }
     if (result.Get(2) != 9)
     {
-        RED("TestOperatorAddition failed: Index 0 value mismatch", "")
+        RED("TestOperatorAddition failed: Index 0 value mismatch");
         return;
     }
-    GREEN("TestOperatorAddition passed")
+    GREEN("TestOperatorAddition passed");
 }
 
 void TestOperatorAdditionSizeMismatchThrows()
@@ -232,15 +230,15 @@ void TestOperatorAdditionSizeMismatchThrows()
     try
     {
         arr1 + arr2;
-        RED("TestOperatorAdditionSizeMismatchThrows failed: Exception not thrown", "")
+        RED("TestOperatorAdditionSizeMismatchThrows failed: Exception not thrown");
     }
     catch (const invalid_argument&)
     {
-        GREEN("TestOperatorAdditionSizeMismatchThrows passed")
+        GREEN("TestOperatorAdditionSizeMismatchThrows passed");
     }
     catch (...)
     {
-        RED("TestOperatorAdditionSizeMismatchThrows failed: Wrong type of exception", "")
+        RED("TestOperatorAdditionSizeMismatchThrows failed: Wrong type of exception");
     }
 }
 
@@ -252,20 +250,20 @@ void TestOperatorScalarMultiplication()
     DynamicArray<int> result = arr * 2;
     if (result.Get(0) != 2)
     {
-        RED("TestOperatorScalarMultiplication failed: Index 0 value mismatch", "")
+        RED("TestOperatorScalarMultiplication failed: Index 0 value mismatch");
         return;
     }
     if (result.Get(1) != 4)
     {
-        RED("TestOperatorScalarMultiplication failed: Index 1 value mismatch", "")
+        RED("TestOperatorScalarMultiplication failed: Index 1 value mismatch");
         return;
     }
     if (result.Get(2) != 6)
     {
-        RED("TestOperatorScalarMultiplication failed: Index 2 value mismatch", "")
+        RED("TestOperatorScalarMultiplication failed: Index 2 value mismatch");
         return;
     }
-    GREEN("TestOperatorScalarMultiplication")
+    GREEN("TestOperatorScalarMultiplication");
 }
 
 void TestDotProduct()
@@ -279,10 +277,10 @@ void TestDotProduct()
     }
     if (arr1.Dot(arr2) != 28)
     {
-        RED("TestDotProduct failed: Expected 28, got ", arr1.Dot(arr2))
+        RED("TestDotProduct failed: Expected 28, got ", arr1.Dot(arr2));
         return;
     }
-    GREEN("TestDotProduct passed")
+    GREEN("TestDotProduct passed");
 }
 
 void TestDotProductSizeMismatchThrows()
@@ -292,15 +290,15 @@ void TestDotProductSizeMismatchThrows()
     try
     {
         arr1.Dot(arr2);
-        RED("TestDotProductSizeMismatchThrows failed: Exception not thrown", "")
+        RED("TestDotProductSizeMismatchThrows failed: Exception not thrown");
     }
     catch (const invalid_argument&)
     {
-        GREEN("TestDotProductSizeMismatchThrows passed")
+        GREEN("TestDotProductSizeMismatchThrows passed");
     }
     catch (...)
     {
-        RED("TestDotProductSizeMismatchThrows failed: Wrong type of exception", "")
+        RED("TestDotProductSizeMismatchThrows failed: Wrong type of exception");
     }
 }
 
@@ -312,8 +310,8 @@ void TestNorm()
     arr.Set(2, 12);
     if (fabs(arr.Norm() - 13) > 1e-6)
     {
-        RED("TestNorm failed: Expected 13, got ", arr.Norm())
+        RED("TestNorm failed: Expected 13, got ", arr.Norm());
         return;
     }
-    GREEN("TestNorm passed")
+    GREEN("TestNorm passed");
 }

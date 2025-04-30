@@ -5,10 +5,11 @@
 #include <cerrno>
 #include <string>
 #include "Sequence.hpp"
-#include "Tests.hpp"
+#include "Tests/Tests.hpp"
 
 using namespace std;
 
+// Если через cin ввести 1в например, то программа сломается. В лабе есть пункт про некорректные исходные данные
 int GetNumber()
 {
     string input;
@@ -36,6 +37,8 @@ int GetNumber()
     }
 }
 
+// тут для положительного числа, границы другие немного, поэтому удобнее в другую функцию,
+// чтобы еще и проверку дополнительно потом не делать
 size_t GetPositiveNumber()
 {
     string input;

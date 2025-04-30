@@ -17,7 +17,7 @@ private:
     Node* tail;
     size_t length;
 
-    T* GetNode(size_t index)
+    Node* GetNode(size_t index) const
     {
         if (index >= length)
             throw std::out_of_range("Index out of range");
@@ -31,7 +31,7 @@ private:
         Node* temp = tail;
         for (size_t i = 0; i < length - 1 - index; i++)
             temp = temp->previous;
-        return *(temp->data);
+        return temp;
     }
 
 public:
@@ -202,7 +202,7 @@ public:
         if (index >= length)
             throw std::out_of_range("Index out of bounds");
         
-        return GetNode(index);
+        return GetNode(index)->data;
     }
 
     // Оператор [] для чтения (const версия)
