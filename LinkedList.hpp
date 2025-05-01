@@ -26,7 +26,7 @@ private:
             Node* temp = head;
             for (size_t i = 0; i < index; i++)
                 temp = temp->next;
-            return temp->data;
+            return temp;
         }
         Node* temp = tail;
         for (size_t i = 0; i < length - 1 - index; i++)
@@ -80,19 +80,7 @@ public:
 
     T Get(size_t index) const
     {
-        if (index >= length)
-            throw std::out_of_range("Index out of range");
-        if (index < length / 2)
-        {
-            Node* temp = head;
-            for (size_t i = 0; i < index; i++)
-                temp = temp->next;
-            return temp->data;
-        }
-        Node* temp = tail;
-        for (size_t i = 0; i < length - 1 - index; i++)
-            temp = temp->previous;
-        return temp->data;
+        return GetNode(index)->data;
     }
 
     LinkedList<T>* GetSubList(size_t start, size_t end) const
@@ -101,11 +89,8 @@ public:
             throw std::out_of_range("Invalid sublist indices");
 
         LinkedList<T>* sublist = new LinkedList<T>();
-        Node* current = head;
-        
         // Перемещаемся к стартовому элементу
-        for (size_t i = 0; i < start; ++i)
-            current = current->next;
+        Node* current = GetNode(start);
 
         // Копируем элементы от start до end
         for (size_t i = start; i <= end; ++i)
@@ -167,9 +152,7 @@ public:
             return;
         }
 
-        Node* temp = head;
-        for (size_t i = 0; i < index - 1; ++i)
-            temp = temp->next;
+        Node* temp = GetNode(index - 1);
 
         Node* newNode = new Node(item, temp, temp->next);
         if (temp->next)

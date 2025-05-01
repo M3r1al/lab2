@@ -184,12 +184,39 @@ public:
     {
         if (size == 0)
             return "[]";
+
+        // Первый проход: вычисляем общую длину строки
+        size_t total_length = 2; // Для '[' и ']'
+        for (size_t i = 0; i < size; ++i)
+        {
+            std::string element_str = std::to_string(Get(i));
+            total_length += element_str.length();
+            if (i != size - 1)
+                total_length += 2; // Для ", "
+        }
+
+        std::string result;
+        result.reserve(total_length); // Опционально: reserve() не гарантирует точность, но помогает
+        result.resize(total_length); // Указываем финальную длину заранее
         
-        std::string s = "[";
-        for (int i = 0; i < size - 1; i++)
-            s += std::to_string(Get(i)) + ", ";
-        s += std::to_string(Get(size - 1)) + "]";
-        return s;
+        size_t pos = 0;
+        result[pos++] = '[';
+        for (size_t i = 0; i < size; ++i)
+        {
+            std::string element_str = std::to_string(Get(i));
+            // Копируем элемент в строку
+            std::copy(element_str.begin(), element_str.end(), result.begin() + pos);
+            pos += element_str.length();
+
+            if (i != size - 1)
+            {
+                result[pos++] = ',';
+                result[pos++] = ' ';
+            }
+        }
+
+        result[pos] = ']';
+        return result;
     }
 };
 

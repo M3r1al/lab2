@@ -13,11 +13,11 @@ public:
     virtual T Get(size_t index) const = 0;
     virtual size_t GetLength() const = 0;
     virtual std::string ToString() const = 0;
-    virtual Sequence<T>* GetSubsequence(size_t start, size_t end) const = 0;
+    virtual Sequence<T>* GetSubsequence(size_t start, size_t end) = 0;
     virtual Sequence<T>* Append(const T& item) = 0;
     virtual Sequence<T>* Prepend(const T& item) = 0;
     virtual Sequence<T>* InsertAt(const T& item, size_t index) = 0;
-    virtual Sequence<T>* Concat(Sequence<T>* list) const = 0;
+    virtual Sequence<T>* Concat(Sequence<T>* list) = 0;
     virtual ~Sequence() {}
 };
 
@@ -28,32 +28,41 @@ class ArraySequence : public Sequence<T>
 private:
     DynamicArray<T> data;
     size_t size;
-    size_t capacity;
 
 protected:
     virtual ArraySequence<T>* Self() const = 0;
 
+    static void Upsize(ArraySequence<T>* self)
+    {
+        if (self->size >= self->data.GetSize())
+        {
+            // Увеличить вместимость (экспоненциальный рост)
+            size_t capacity = (self->data.GetSize() == 0) ? 1 : (self->data.GetSize()) * 2;
+            self->data.Resize(capacity);
+        }
+    }
+
 public:
-    ArraySequence() : data(0), size(0), capacity(0) {}
-    ArraySequence(int cap) : data(0), size(0), capacity(cap) {}
+    ArraySequence() : data(0), size(0) {}
+    ArraySequence(int cap) : data(cap), size(0) {}
 
-    ArraySequence(const T* items, size_t count) : data(items, count), size(count), capacity(count) {}
+    ArraySequence(const T* items, size_t count) : data(items, count), size(count) {}
 
-    ArraySequence(const DynamicArray<T>& arr) : data(arr), size(arr.GetSize()), capacity(arr.GetSize()) {}
+    ArraySequence(const DynamicArray<T>& arr) : data(arr), size(arr.GetSize()) {}
 
-    ArraySequence(const LinkedList<T>& list) : data(list.GetLength()), size(list.GetLength()), capacity(list.GetLength())
+    ArraySequence(const LinkedList<T>& list) : data(list.GetLength()), size(list.GetLength())
     {
         for (size_t i = 0; i < list.GetLength(); i++)
             data.Set(i, list.Get(i));
     }
     
-    ArraySequence(const ArraySequence<T>& other) : data(other.GetLength()), size(other.GetLength()), capacity(other.GetLength())
+    ArraySequence(const ArraySequence<T>& other) : data(other.GetLength()), size(other.GetLength())
     {
         for (size_t i = 0; i < data.GetSize(); i++)
             data.Set(i, other.Get(i));
     }
 
-    ArraySequence(const Sequence<T>* other) : data(other->GetLength()), size(other->GetLength()), capacity(other->GetLength())
+    ArraySequence(const Sequence<T>* other) : data(other->GetLength()), size(other->GetLength())
     {
         for (size_t i = 0; i < other->GetLength(); i++)
             data.Set(i, other->Get(i));
@@ -66,11 +75,13 @@ public:
 
     T GetLast() const override
     {
-        return data.Get(data.GetSize() - 1);
+        return data.Get(size - 1);
     }
 
     T Get(size_t index) const override
     {
+        if (index >= size)
+            throw std::out_of_range("Index out of range");
         return data.Get(index);
     }
 
@@ -79,7 +90,7 @@ public:
         return size;
     }
 
-    Sequence<T>* GetSubsequence(size_t start, size_t end) const override
+    Sequence<T>* GetSubsequence(size_t start, size_t end) override
     {
         if (start > end || end >= GetLength())
             throw std::out_of_range("Invalid range");
@@ -95,12 +106,7 @@ public:
     Sequence<T>* Append(const T& item) override
     {
         auto self = Self();
-        if (self->size >= self->capacity)
-        {
-            // Увеличить вместимость (экспоненциальный рост)
-            capacity = (capacity == 0) ? 1 : capacity * 2;
-            self->data.Resize(capacity);
-        }
+        Upsize(self);
         self->data.Set(self->size, item);
         self->size++;
         return self;
@@ -109,12 +115,7 @@ public:
     Sequence<T>* Prepend(const T& item) override
     {
         auto self = Self();
-        if (self->size >= self->capacity)
-        {
-            size_t newCapacity = (self->capacity == 0) ? 1 : self->capacity * 2;
-            self->data.Resize(newCapacity);
-            self->capacity = newCapacity;
-        }
+        Upsize(self);
         for (size_t i = self->size; i > 0; i--)
             self->data.Set(i, self->data.Get(i - 1));
 
@@ -128,14 +129,14 @@ public:
         auto self = Self();
         if (index > size)
             throw std::out_of_range("Index out of range");
-        self->data.Resize(self->data.GetSize() + 1);
+        Upsize(self);
         for (size_t i = self->data.GetSize() - 1; i > index; i--)
             self->data.Set(i, self->data.Get(i - 1));
         self->data.Set(index, item);
         return self;
     }
 
-    Sequence<T>* Concat(Sequence<T>* list) const override
+    Sequence<T>* Concat(Sequence<T>* list) override
     {
         size_t total = GetLength() + list->GetLength();
         auto* result = Self(); // Create derived type
@@ -147,7 +148,7 @@ public:
         return result;
     }
 
-    Sequence<T>* Add(const Sequence<T>* other) const
+    Sequence<T>* Add(const Sequence<T>* other)
     {
         if (GetLength() != other->GetLength())
             throw std::invalid_argument("Size mismatch in addition");
@@ -176,36 +177,69 @@ public:
         DynamicArray<T> otherData(GetLength());
         for (size_t i = 0; i < GetLength(); i++)
             otherData.Set(i, other->Get(i));
-        return data.Dot(otherData);
+        return Self()->data.Dot(otherData);
     }
 
     double Norm() const
     {
-        return data.Norm();
+        return Self()->data.Norm();
     }
 
     // Оператор [] для записи (non-const версия)
     T& operator[](size_t index)
     {
-        return data[index];
+        if (index >= size)
+            throw std::out_of_range("Index out of range");
+        return Self()->data[index];
     }
 
     // Оператор [] для чтения (const версия)
     const T& operator[](size_t index) const
     {
-        return data[index];
+        if (index >= size)
+            throw std::out_of_range("Index out of range");
+        return Self()->data[index];
     }
 
     std::string ToString() const override
     {
         if (size == 0)
             return "[]";
+
+        auto self = Self();
+
+        // Первый проход: вычисляем общую длину строки
+        size_t total_length = 2; // Для '[' и ']'
+        for (size_t i = 0; i < self->size; ++i)
+        {
+            std::string element_str = std::to_string(Get(i));
+            total_length += element_str.length();
+            if (i != self->size - 1)
+                total_length += 2; // Для ", "
+        }
+
+        std::string result;
+        result.reserve(total_length); // Опционально: reserve() не гарантирует точность, но помогает
+        result.resize(total_length); // Указываем финальную длину заранее
         
-        std::string s = "[";
-        for (int i = 0; i < size - 1; i++)
-            s += std::to_string(Get(i)) + ", ";
-        s += std::to_string(Get(size - 1)) + "]";
-        return s;
+        size_t pos = 0;
+        result[pos++] = '[';
+        for (size_t i = 0; i < self->size; ++i)
+        {
+            std::string element_str = std::to_string(Get(i));
+            // Копируем элемент в строку
+            std::copy(element_str.begin(), element_str.end(), result.begin() + pos);
+            pos += element_str.length();
+
+            if (i != self->size - 1)
+            {
+                result[pos++] = ',';
+                result[pos++] = ' ';
+            }
+        }
+
+        result[pos] = ']';
+        return result;
     }
 };
 
@@ -226,7 +260,7 @@ public:
 
     ListSequence(const LinkedList<T>& linked) : list(linked) {}
 
-    ListSequence(const ListSequence<T>& linked) : list(*linked.list.GetSubList(0, linked.GetLength() - 1)) {}
+    ListSequence(const ListSequence<T>& linked) : list(linked.list) {}
 
     ListSequence(const Sequence<T>* other) : list()
     {
@@ -254,7 +288,7 @@ public:
         return list.GetLength();
     }
 
-    Sequence<T>* GetSubsequence(size_t start, size_t end) const override
+    Sequence<T>* GetSubsequence(size_t start, size_t end) override
     {
         if (start > end || end >= GetLength())
             throw std::out_of_range("Invalid range");
@@ -284,7 +318,7 @@ public:
         return self;
     }
 
-    Sequence<T>* Concat(Sequence<T>* other) const override
+    Sequence<T>* Concat(Sequence<T>* other) override
     {
         auto* newList = list.Concat(&(dynamic_cast<ListSequence<T>*>(other)->list));
         auto* result = Self();
