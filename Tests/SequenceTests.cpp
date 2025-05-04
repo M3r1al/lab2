@@ -12,15 +12,18 @@ void RunSequenceTests()
     TestImmutableArrayPrepend();
     TestImmutableListAppend();
     TestImmutableListPrepend();
+    TestImmutableGetSubsequence();
 
     // Тесты для Mutable
     TestMutableArrayAppend();
     TestMutableArrayPrepend();
     TestMutableListAppend();
     TestMutableListPrepend();
+    TestMutableGetSubsequence();
 
     // Общие тесты
     TestConcatWithEmpty();
+    TestConcatArraySequence();
 }
 
 // Тесты для ImmutableArraySequence
@@ -32,14 +35,17 @@ void TestImmutableArrayAppend()
     if (a.GetLength() != 2)
     {
         RED("TestImmutableArrayAppend failed: Expected original length 2, got ", a.GetLength());
+        delete newA;
         return;
     }
     if (newA->GetLength() != 3)
     {
         RED("TestImmutableArrayAppend failed: Expected new length 3, got ", newA->GetLength());
+        delete newA;
         return;
     }
     GREEN("TestImmutableArrayAppend passed");
+    delete newA;
 }
 
 void TestImmutableArrayPrepend()
@@ -50,14 +56,17 @@ void TestImmutableArrayPrepend()
     if (newA->Get(0) != 1 || newA->Get(1) != 2)
     {
         RED("TestImmutableArrayPrepend failed: Values mismatch");
+        delete newA;
         return;
     }
     if (a.GetLength() != 2)
     {
         RED("TestImmutableArrayPrepend failed: Expected original length 2, got ", a.GetLength());
+        delete newA;
         return;
     }
     GREEN("TestImmutableArrayPrepend passed");
+    delete newA;
 }
 
 // Тесты для MutableListSequence
@@ -81,6 +90,45 @@ void TestMutableArrayPrepend()
     GREEN("TestMutableArrayPrepend passed");
 }
 
+void TestImmutableGetSubsequence()
+{
+    int values_a[] = {1, 2, 3};
+    ImmutableArraySequence<int> a(values_a, 3);
+    auto sub = a.GetSubsequence(0, 1);
+    if (sub->GetLength() != 2)
+    {
+        RED("TestImmutableGetSubsequence failed: Expected length 2, got ", sub->GetLength());
+        delete sub;
+        return;
+    }
+    if (sub->Get(0) != 1 || sub->Get(1) != 2)
+    {
+        RED("TestImmutableGetSubsequence failed: Values mismatch");
+        delete sub;
+        return;
+    }
+    GREEN("TestImmutableGetSubsequence passed");
+    delete sub;
+}
+
+void TestMutableGetSubsequence()
+{
+    int values_a[] = {1, 2, 3};
+    MutableArraySequence<int> a(values_a, 3);
+    auto sub = a.GetSubsequence(0, 1);
+    if (sub->GetLength() != 2)
+    {
+        RED("TestMutableGetSubsequence failed: Expected length 2, got ", sub->GetLength());
+        return;
+    }
+    if (sub->Get(0) != 1 || sub->Get(1) != 2)
+    {
+        RED("TestMutableGetSubsequence failed: Values mismatch");
+        return;
+    }
+    GREEN("TestMutableGetSubsequence passed");
+}
+
 // Тесты для List-версий
 void TestImmutableListAppend()
 {
@@ -90,14 +138,17 @@ void TestImmutableListAppend()
     if (newA->GetLength() != 3)
     {
         RED("TestImmutableListAppend failed: Expected length 3, got ", newA->GetLength());
+        delete newA;
         return;
     }
     if (a.GetLength() != 2)
     {
         RED("TestImmutableListAppend failed: Expected original length 2, got ", a.GetLength());
+        delete newA;
         return;
     }
     GREEN("TestImmutableListAppend passed");
+    delete newA;
 }
 
 void TestMutableListAppend()
@@ -116,14 +167,17 @@ void TestImmutableListPrepend()
     if (newA->Get(0) != 1 || newA->Get(1) != 2)
     {
         RED("TestImmutableListPrepend failed: Values mismatch");
+        delete newA;
         return;
     }
     if (a.GetLength() != 2)
     {
         RED("TestImmutableListPrepend failed: Original length changed to ", a.GetLength());
+        delete newA;
         return;
     }
     GREEN("TestImmutableListPrepend passed");
+    delete newA;
 }
 
 void TestMutableListPrepend()
@@ -202,4 +256,27 @@ void TestConcatWithEmpty()
         return;
     }
     GREEN("TestConcatWithEmpty passed");
+}
+
+void TestConcatArraySequence()
+{
+    int values_a[] = {1, 2};
+    int values_b[] = {3, 4};
+    MutableListSequence<int> a(values_a, 2);
+    MutableArraySequence<int> b(values_b, 2);
+    try
+    {
+        auto concat = a.Concat(&b);
+        RED("TestConcatArraySequence failed: Excetion not thrown");
+        return;
+    }
+    catch(const std::invalid_argument& e)
+    {
+        GREEN("TestConcatArraySequence passed");
+        return;
+    }
+    catch (...)
+    {
+        RED("TestSetOutOfRangeThrows failed: Wrong type of exception");
+    }
 }

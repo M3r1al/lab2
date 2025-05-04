@@ -203,9 +203,13 @@ public:
             return "[]";
         
         std::string s = "[";
+        Node* temp = head;
         for (int i = 0; i < length - 1; i++)
-            s += std::to_string(Get(i)) + ", ";
-        s += std::to_string(Get(length - 1)) + "]";
+        {
+            s += std::to_string(temp->data) + ", ";
+            temp = temp->next;
+        }
+        s += std::to_string(temp->data) + "]";
 
         return s;
     }

@@ -9,11 +9,14 @@ void TestImmutableArrayAppend();
 void TestImmutableArrayPrepend();
 void TestImmutableListAppend();
 void TestImmutableListPrepend();
+void TestImmutableGetSubsequence();
 void TestMutableArrayAppend();
 void TestMutableArrayPrepend();
 void TestMutableListAppend();
 void TestMutableListPrepend();
+void TestMutableGetSubsequence();
 void TestConcatWithEmpty();
+void TestConcatArraySequence();
 
 template<typename T>
 void TestMutableSequenceAppend(Sequence<T>& seq, int expectedLengthAfter, const T& value)

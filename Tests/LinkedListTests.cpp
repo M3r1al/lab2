@@ -234,6 +234,7 @@ void TestGetSubList()
         return;
     }
     GREEN("TestGetSubList passed");
+    delete sublist;
 }
 
 void TestGetSubListInvalidThrows()
@@ -291,4 +292,5 @@ void TestConcat()
         return;
     }
     GREEN("TestConcat passed");
+    delete result;
 }

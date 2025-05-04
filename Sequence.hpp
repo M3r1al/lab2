@@ -37,7 +37,7 @@ protected:
         if (self->size >= self->data.GetSize())
         {
             // Увеличить вместимость (экспоненциальный рост)
-            size_t capacity = (self->data.GetSize() == 0) ? 1 : (self->data.GetSize()) * 2;
+            size_t capacity = (self->data.GetSize() == 0) ? 16 : (self->data.GetSize()) * 2;
             self->data.Resize(capacity);
         }
     }
@@ -97,6 +97,7 @@ public:
         auto* sub = Self();
         
         size_t newSize = end - start + 1;
+        sub->size = newSize;
         sub->data.Resize(newSize);
         for (size_t i = 0; i < newSize; i++)
             sub->data.Set(i, sub->data.Get(start + i));
@@ -320,6 +321,9 @@ public:
 
     Sequence<T>* Concat(Sequence<T>* other) override
     {
+        if (dynamic_cast<ArraySequence<T>*>(other) != nullptr)
+            throw std::invalid_argument("Cannot concat with ArraySequence");
+        
         auto* newList = list.Concat(&(dynamic_cast<ListSequence<T>*>(other)->list));
         auto* result = Self();
         result->list = *newList;
