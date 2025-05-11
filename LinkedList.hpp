@@ -83,6 +83,16 @@ public:
         return GetNode(index)->data;
     }
 
+    T& GetLinked(size_t index)
+    {
+        return GetNode(index)->data;
+    }
+
+    const T& GetLinked(size_t index) const
+    {
+        return GetNode(index)->data;
+    }
+
     LinkedList<T>* GetSubList(size_t start, size_t end) const
     {
         if (start > end || end >= length)

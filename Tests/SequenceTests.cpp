@@ -7,276 +7,75 @@ using namespace std;
 void RunSequenceTests()
 {
     cout << "Testing Sequence" << endl;
-    // Тесты для Immutable
-    TestImmutableArrayAppend();
-    TestImmutableArrayPrepend();
-    TestImmutableListAppend();
-    TestImmutableListPrepend();
-    TestImmutableGetSubsequence();
+    // Тесты для Append
+    int values1[] = {1, 2};
+    int expectedAppend[] = {1, 2, 3};
+    
+    TestImmutableAppend<int>(CreateImmutableArray<int>(values1, 2), values1, 2, 3, expectedAppend, 3, "TestImmutableArrayAppend");
+    TestImmutableAppend<int>(CreateImmutableList<int>(values1, 2), values1, 2, 3, expectedAppend, 3, "TestImmutableListAppend");
+    TestMutableAppend<int>(CreateMutableArray<int>(values1, 2), values1, 2, 3, expectedAppend, 3, "TestMutableArrayAppend");
+    TestMutableAppend<int>(CreateMutableList<int>(values1, 2), values1, 2, 3, expectedAppend, 3, "TestMutableListAppend");
+    TestMutableAppend<int>(CreateAdaptiveSequence<int>(values1, 2), values1, 2, 3, expectedAppend, 3, "TestAdaptiveSequenceAppend");
+    TestMutableAppend<int>(CreateSegmentedList<int>(values1, 2, 1024), values1, 2, 3, expectedAppend, 3, "TestSegmentedListAppend");
 
-    // Тесты для Mutable
-    TestMutableArrayAppend();
-    TestMutableArrayPrepend();
-    TestMutableListAppend();
-    TestMutableListPrepend();
-    TestMutableGetSubsequence();
+    int expectedNullAppend[] = {3};
+    TestImmutableAppend<int>(CreateImmutableArray<int>(nullptr, 0), nullptr, 0, 3, expectedNullAppend, 1, "TestImmutableArrayEmptyAppend");
+    
+    // Тесты для Prepend
+    int values2[] = {2, 3};
+    int expectedPrepend[] = {1, 2, 3};
+    
+    TestImmutablePrepend<int>(CreateImmutableArray<int>(values2, 2), values2, 2, 1, expectedPrepend, 3, "TestImmutableArrayPrepend");
+    TestImmutablePrepend<int>(CreateImmutableList<int>(values2, 2), values2, 2, 1, expectedPrepend, 3, "TestImmutableListPrepend");
+    TestMutablePrepend<int>(CreateMutableArray<int>(values2, 2), values2, 2, 1, expectedPrepend, 3, "TestMutableArrayPrepend");
+    TestMutablePrepend<int>(CreateMutableList<int>(values2, 2), values2, 2, 1, expectedPrepend, 3, "TestMutableListPrepend");
+    TestMutablePrepend<int>(CreateAdaptiveSequence<int>(values2, 2), values2, 2, 1, expectedPrepend, 3, "TestAdaptiveSequencePrepend");
+    TestMutablePrepend<int>(CreateSegmentedList<int>(values2, 2, 1024), values2, 2, 1, expectedPrepend, 3, "TestSegmentedListPrepend");
+    
+    // Тесты для GetSubsequence
+    int values3[] = {1, 2, 3, 4, 5};
+    int expectedSub[] = {2, 3, 4};
+    
+    TestGetSubsequence<int>(CreateImmutableArray<int>(values3, 5), values3, 5, 1, 3, expectedSub, 3, "TestImmutableArrayGetSubsequence");
+    TestGetSubsequence<int>(CreateImmutableList<int>(values3, 5), values3, 5, 1, 3, expectedSub, 3, "TestImmutableListGetSubsequence");
+    TestGetSubsequence<int>(CreateMutableArray<int>(values3, 5), values3, 5, 1, 3, expectedSub, 3, "TestMutableArrayGetSubsequence");
+    TestGetSubsequence<int>(CreateMutableList<int>(values3, 5), values3, 5, 1, 3, expectedSub, 3, "TestMutableListGetSubsequence");
+    TestGetSubsequence<int>(CreateAdaptiveSequence<int>(values3, 5), values3, 5, 1, 3, expectedSub, 3, "TestAdaptiveSequenceGetSubsequence");
+    TestGetSubsequence<int>(CreateSegmentedList<int>(values3, 5, 1024), values3, 5, 1, 3, expectedSub, 3, "TestSegmentedListGetSubsequence");
+    
+    // Тесты для GetSubsequence с ошибкой
+    TestGetSubsequence<int>(CreateImmutableArray<int>(values3, 5), values3, 5, 3, 5, nullptr, 0, "TestTooBigIndexGetSubsequense");
+    TestGetSubsequence<int>(CreateImmutableArray<int>(values3, 5), values3, 5, -1, 3, nullptr, 0, "TestNegativeIndexGetSubsequense");
 
-    // Общие тесты
-    TestConcatWithEmpty();
-    TestConcatArraySequence();
-}
+    // Тесты для Concat
+    int values4[] = {1, 2};
+    int values5[] = {3, 4};
+    int expectedConcat[] = {1, 2, 3, 4};
 
-// Тесты для ImmutableArraySequence
-void TestImmutableArrayAppend()
-{
-    int values_a[] = {1, 2};
-    ImmutableArraySequence<int> a(values_a, 2);
-    auto newA = a.Append(3);
-    if (a.GetLength() != 2)
-    {
-        RED("TestImmutableArrayAppend failed: Expected original length 2, got ", a.GetLength());
-        delete newA;
-        return;
-    }
-    if (newA->GetLength() != 3)
-    {
-        RED("TestImmutableArrayAppend failed: Expected new length 3, got ", newA->GetLength());
-        delete newA;
-        return;
-    }
-    GREEN("TestImmutableArrayAppend passed");
-    delete newA;
-}
+    TestImmutableConcat<int>(CreateImmutableArray<int>(values4, 2), CreateImmutableArray<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestImmutableArrayConcat");
+    TestImmutableConcat<int>(CreateImmutableList<int>(values4, 2), CreateImmutableList<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestImmutableListConcat");
+    TestMutableConcat<int>(CreateMutableArray<int>(values4, 2), CreateMutableArray<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestMutableArrayConcat");
+    TestMutableConcat<int>(CreateMutableList<int>(values4, 2), CreateMutableList<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestMutableListConcat");
+    TestMutableConcat<int>(CreateAdaptiveSequence<int>(values4, 2), CreateAdaptiveSequence<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestAdaptiveSequenceConcat");
+    TestMutableConcat<int>(CreateSegmentedList<int>(values4, 2, 1024), CreateSegmentedList<int>(values5, 2, 1024), values4, 2, values5, 2, expectedConcat, 4, "TestSegmentedListConcat");
 
-void TestImmutableArrayPrepend()
-{
-    int values_a[] = {2, 3};
-    ImmutableArraySequence<int> a(values_a, 2);
-    auto newA = a.Prepend(1);
-    if (newA->Get(0) != 1 || newA->Get(1) != 2)
-    {
-        RED("TestImmutableArrayPrepend failed: Values mismatch");
-        delete newA;
-        return;
-    }
-    if (a.GetLength() != 2)
-    {
-        RED("TestImmutableArrayPrepend failed: Expected original length 2, got ", a.GetLength());
-        delete newA;
-        return;
-    }
-    GREEN("TestImmutableArrayPrepend passed");
-    delete newA;
-}
+    // Mutable and Immutable
+    TestImmutableConcat<int>(CreateImmutableArray<int>(values4, 2), CreateMutableArray<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestImmutableAndMutableArrayConcat");
+    TestImmutableConcat<int>(CreateImmutableList<int>(values4, 2), CreateMutableList<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestImmutableAndMutableListConcat");
+    TestMutableConcat<int>(CreateMutableArray<int>(values4, 2), CreateImmutableArray<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestMutableAndImmutableArrayConcat");
+    TestMutableConcat<int>(CreateMutableList<int>(values4, 2), CreateImmutableList<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestMutableAndImmutableListConcat");
 
-// Тесты для MutableListSequence
-void TestMutableArrayAppend()
-{
-    int values_a[] = {1, 2};
-    MutableArraySequence<int> a(values_a, 2);
-    TestMutableSequenceAppend(a, 3, 3);
-}
+    // Разные типы
+    TestImmutableConcat<int>(CreateImmutableArray<int>(values4, 2), CreateImmutableList<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestImmutableArrayAndListConcat");
+    TestImmutableConcat<int>(CreateImmutableList<int>(values4, 2), CreateImmutableArray<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestImmutableListAndArrayConcat");
+    TestMutableConcat<int>(CreateMutableArray<int>(values4, 2), CreateMutableList<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestMutableArrayAndListConcat");
+    TestMutableConcat<int>(CreateMutableList<int>(values4, 2), CreateMutableArray<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestMutableListAndArrayConcat");
+    TestMutableConcat<int>(CreateAdaptiveSequence<int>(values4, 2), CreateImmutableArray<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestAdaptiveSequenceAndImmutableArrayConcat");
+    TestMutableConcat<int>(CreateSegmentedList<int>(values4, 2, 1024), CreateAdaptiveSequence<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestSegmentedListAndAdaptiveSequenceConcat");
+    TestMutableConcat<int>(CreateAdaptiveSequence<int>(values4, 2), CreateSegmentedList<int>(values5, 2, 1024), values4, 2, values5, 2, expectedConcat, 4, "TestAdaptiveSequenceAndSegmentedListConcat");
+    TestMutableConcat<int>(CreateSegmentedList<int>(values4, 2, 1024), CreateImmutableArray<int>(values5, 2), values4, 2, values5, 2, expectedConcat, 4, "TestSegmentedListAndImmutableArrayConcat");
 
-void TestMutableArrayPrepend()
-{
-    int values_a[] = {2, 3};
-    MutableArraySequence<int> a(values_a, 2);
-    auto newA = a.Prepend(1);
-    if (newA != &a || a.Get(0) != 1 || a.Get(1) != 2)
-    {
-        RED("TestMutableArrayPrepend failed: Values mismatch");
-        return;
-    }
-    GREEN("TestMutableArrayPrepend passed");
-}
 
-void TestImmutableGetSubsequence()
-{
-    int values_a[] = {1, 2, 3};
-    ImmutableArraySequence<int> a(values_a, 3);
-    auto sub = a.GetSubsequence(0, 1);
-    if (sub->GetLength() != 2)
-    {
-        RED("TestImmutableGetSubsequence failed: Expected length 2, got ", sub->GetLength());
-        delete sub;
-        return;
-    }
-    if (sub->Get(0) != 1 || sub->Get(1) != 2)
-    {
-        RED("TestImmutableGetSubsequence failed: Values mismatch");
-        delete sub;
-        return;
-    }
-    GREEN("TestImmutableGetSubsequence passed");
-    delete sub;
-}
-
-void TestMutableGetSubsequence()
-{
-    int values_a[] = {1, 2, 3};
-    MutableArraySequence<int> a(values_a, 3);
-    auto sub = a.GetSubsequence(0, 1);
-    if (sub->GetLength() != 2)
-    {
-        RED("TestMutableGetSubsequence failed: Expected length 2, got ", sub->GetLength());
-        return;
-    }
-    if (sub->Get(0) != 1 || sub->Get(1) != 2)
-    {
-        RED("TestMutableGetSubsequence failed: Values mismatch");
-        return;
-    }
-    GREEN("TestMutableGetSubsequence passed");
-}
-
-// Тесты для List-версий
-void TestImmutableListAppend()
-{
-    int values_a[] = {1, 2};
-    ImmutableListSequence<int> a(values_a, 2);
-    auto newA = a.Append(3);
-    if (newA->GetLength() != 3)
-    {
-        RED("TestImmutableListAppend failed: Expected length 3, got ", newA->GetLength());
-        delete newA;
-        return;
-    }
-    if (a.GetLength() != 2)
-    {
-        RED("TestImmutableListAppend failed: Expected original length 2, got ", a.GetLength());
-        delete newA;
-        return;
-    }
-    GREEN("TestImmutableListAppend passed");
-    delete newA;
-}
-
-void TestMutableListAppend()
-{
-    int values_a[] = {1, 2};
-    MutableListSequence<int> a(values_a, 2);
-    TestMutableSequenceAppend(a, 3, 3);
-}
-
-// Аналогично для Prepend
-void TestImmutableListPrepend()
-{
-    int values_a[] = {2, 3};
-    ImmutableListSequence<int> a(values_a, 2);
-    auto newA = a.Prepend(1);
-    if (newA->Get(0) != 1 || newA->Get(1) != 2)
-    {
-        RED("TestImmutableListPrepend failed: Values mismatch");
-        delete newA;
-        return;
-    }
-    if (a.GetLength() != 2)
-    {
-        RED("TestImmutableListPrepend failed: Original length changed to ", a.GetLength());
-        delete newA;
-        return;
-    }
-    GREEN("TestImmutableListPrepend passed");
-    delete newA;
-}
-
-void TestMutableListPrepend()
-{
-    int values_a[] = {2, 3};
-    MutableListSequence<int> a(values_a, 2);
-    auto newA = a.Prepend(1);
-    if (newA != &a || a.Get(0) != 1 || a.Get(1) != 2)
-    {
-        RED("TestMutableListPrepend failed: Values mismatch");
-        return;
-    }
-    GREEN("TestMutableListPrepend passed");
-}
-
-/* 
- * Тесты для проверки различий
- */
-void TestMutabilityDifferences()
-{
-    int values_a[] = {2, 3};
-    int values_b[] = {1, 2};
-    // Проверка Array
-    MutableArraySequence<int> mutableArr(values_a, 2);
-    ImmutableArraySequence<int> immutableArr(values_a, 2);
-
-    // Изменение Mutable
-    mutableArr.Append(3);
-    if (mutableArr.GetLength() != 3)
-    {
-        RED("TestMutabilityDifferences failed (Array): Mutable length mismatch");
-        return;
-    }
-
-    // Проверка, что Immutable не изменился
-    immutableArr.Append(3);
-    if (immutableArr.GetLength() != 2)
-    {
-        RED("TestMutabilityDifferences failed (Array): Immutable was modified");
-        return;
-    }
-
-    // Проверка List
-    MutableListSequence<int> mutableList(values_b, 2);
-    ImmutableListSequence<int> immutableList(values_b, 2);
-
-    // Изменение Mutable
-    mutableList.Append(3);
-    if (mutableList.GetLength() != 3)
-    {
-        RED("TestMutabilityDifferences failed (List): Mutable length mismatch");
-        return;
-    }
-
-    // Проверка, что Immutable не изменился
-    immutableList.Append(3);
-    if (immutableList.GetLength() != 2)
-    {
-        RED("TestMutabilityDifferences failed (List): Immutable was modified");
-        return;
-    }
-
-    GREEN("TestMutabilityDifferences passed");
-}
-
-// Дополнительные тесты
-void TestConcatWithEmpty()
-{
-    int values_a[] = {1, 2};
-    MutableListSequence<int> a(values_a, 2);
-    MutableListSequence<int> b; // Используем базовый класс для теста
-    auto concat1 = a.Concat(&b);
-    if (concat1->GetLength() != 2)
-    {
-        RED("TestConcatWithEmpty failed: Concat a + empty length expected 2, got ", concat1->GetLength());
-        return;
-    }
-    GREEN("TestConcatWithEmpty passed");
-}
-
-void TestConcatArraySequence()
-{
-    int values_a[] = {1, 2};
-    int values_b[] = {3, 4};
-    MutableListSequence<int> a(values_a, 2);
-    MutableArraySequence<int> b(values_b, 2);
-    try
-    {
-        auto concat = a.Concat(&b);
-        RED("TestConcatArraySequence failed: Excetion not thrown");
-        return;
-    }
-    catch(const std::invalid_argument& e)
-    {
-        GREEN("TestConcatArraySequence passed");
-        return;
-    }
-    catch (...)
-    {
-        RED("TestSetOutOfRangeThrows failed: Wrong type of exception");
-    }
+    // Тест для Concat с ошибкой
+    TestImmutableConcat<int>(CreateImmutableArray<int>(nullptr, 0), CreateImmutableArray<int>(values5, 2), nullptr, 0, values5, 2, values5, 2, "TestConcatWithEmpty");
 }

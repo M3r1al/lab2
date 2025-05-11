@@ -97,10 +97,10 @@ public:
         auto* sub = Self();
         
         size_t newSize = end - start + 1;
-        sub->size = newSize;
-        sub->data.Resize(newSize);
         for (size_t i = 0; i < newSize; i++)
             sub->data.Set(i, sub->data.Get(start + i));
+        sub->size = newSize;
+        sub->data.Resize(newSize);
         return sub;
     }
 
@@ -141,11 +141,11 @@ public:
     {
         size_t total = GetLength() + list->GetLength();
         auto* result = Self(); // Create derived type
-        result->data.Resize(total);
-        for (size_t i = 0; i < GetLength(); i++)
-            result->data.Set(i, Get(i));
+        if (result->data.GetSize() < total)
+            result->data.Resize(total);
         for (size_t i = 0; i < list->GetLength(); i++)
             result->data.Set(GetLength() + i, list->Get(i));
+        result->size = total;
         return result;
     }
 
@@ -321,12 +321,17 @@ public:
 
     Sequence<T>* Concat(Sequence<T>* other) override
     {
-        if (dynamic_cast<ArraySequence<T>*>(other) != nullptr)
-            throw std::invalid_argument("Cannot concat with ArraySequence");
-        
-        auto* newList = list.Concat(&(dynamic_cast<ListSequence<T>*>(other)->list));
+        auto* otherList = dynamic_cast<ListSequence<T>*>(other);
+        if (otherList != nullptr)
+        {
+            auto* newList = list.Concat(&(otherList->list));
+            auto* result = Self();
+            result->list = *newList;
+            return result;
+        }
         auto* result = Self();
-        result->list = *newList;
+        for (int i = 0; i < other->GetLength(); i++)
+            result->list.Append(other->Get(i));
         return result;
     }
 
